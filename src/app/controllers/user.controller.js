@@ -1,16 +1,16 @@
-const UserAccountSchema = require("../models/userAccount.model");
-const { userAccountValidator } = require("../validators");
+const UserSchema = require("../models/user.model");
+const { userValidator } = require("../validators");
 
-class userAccountController {
-	// [GET] /userAccounts
+class userController {
+	// [GET] /users
 	async getList(req, res, next) {
 		try {
-			const listResultFound = await UserAccountSchema.find({})
+			const listResultFound = await UserSchema.find({})
 				.sortable(req)
 				.searchable(req)
 				.limitable(req);
 
-			const allDocuments = await UserAccountSchema.find({}).searchable(req);
+			const allDocuments = await UserSchema.find({}).searchable(req);
 
 			if (listResultFound) {
 				res.json({
@@ -30,11 +30,11 @@ class userAccountController {
 		}
 	}
 
-	// [GET] /userAccounts/:id
+	// [GET] /users/:id
 	async findById(req, res, next) {
 		try {
 			const id = req.params.id;
-			const itemFound = await UserAccountSchema.findOne({
+			const itemFound = await UserSchema.findOne({
 				_id: id,
 			});
 
@@ -55,12 +55,12 @@ class userAccountController {
 		}
 	}
 
-	// [POST] /userAccounts/register
+	// [POST] /users/register
 	async register(req, res, next) {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userAccountValidator.loginOrRegister(payload);
+			const { error } = userValidator.register(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -69,8 +69,8 @@ class userAccountController {
 				return;
 			}
 
-			const itemExisted = await UserAccountSchema.findOne({
-				$or: [{ email: payload.email }, { phone: payload.phone }],
+			const itemExisted = await UserSchema.findOne({
+				$or: [{ email: payload.email }, { phoneNumber: payload.phoneNumber }],
 			});
 			if (itemExisted) {
 				res.json({
@@ -81,7 +81,7 @@ class userAccountController {
 			}
 
 			// create method in Schema not allowed handle prev middleware in mongoose
-			const newUser = new UserAccountSchema(payload);
+			const newUser = new UserSchema(payload);
 			const saveUserResult = await newUser.save();
 
 			res.json({
@@ -94,12 +94,12 @@ class userAccountController {
 		}
 	}
 
-	// [POST] /userAccounts/login
+	// [POST] /users/login
 	async login(req, res, next) {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userAccountValidator.loginOrRegister(payload);
+			const { error } = userValidator.login(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -108,8 +108,8 @@ class userAccountController {
 				return;
 			}
 
-			const accountExisted = await UserAccountSchema.findOne({
-				$and: [{ email: payload.email }, { phone: payload.phone }],
+			const accountExisted = await UserSchema.findOne({
+				$or: [{ email: payload.email }, { phoneNumber: payload.phoneNumber }],
 			});
 			if (!accountExisted) {
 				res.json({
@@ -140,13 +140,13 @@ class userAccountController {
 		}
 	}
 
-	// [PUT] /userAccounts/:id/updatePasswordById
+	// [PUT] /users/:id/updatePasswordById
 	async updatePasswordById(req, res, next) {
 		try {
 			const id = req.params.id;
-			const newPassword = req.body.password;
+			const newPassword = req.body.newPassword;
 
-			const { error } = userAccountValidator.updatePassword(newPassword);
+			const { error } = userValidator.updatePassword(newPassword);
 			if (error) {
 				res.json({
 					code: 4,
@@ -155,7 +155,7 @@ class userAccountController {
 				return;
 			}
 
-			const itemFound = await UserAccountSchema.findOne({
+			const itemFound = await UserSchema.findOne({
 				_id: id,
 			});
 			if (!itemFound) {
@@ -178,12 +178,12 @@ class userAccountController {
 		}
 	}
 
-	// [DELETE] /userAccounts/:id
+	// [DELETE] /users/:id
 	async deleteById(req, res, next) {
 		try {
 			const id = req.params.id;
 
-			const deleteResult = await UserAccountSchema.deleteOne({
+			const deleteResult = await UserSchema.deleteOne({
 				_id: id,
 			});
 			if (deleteResult.deletedCount > 0) {
@@ -203,4 +203,4 @@ class userAccountController {
 	}
 }
 
-module.exports = new userAccountController();
+module.exports = new userController();

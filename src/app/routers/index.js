@@ -1,9 +1,9 @@
-const userAccountRouter = require("./userAccount.router");
+const userRouter = require("./user.router");
 
 function configRouter(app) {
 	if (!app) return;
 
-	app.use("/userAccounts", userAccountRouter);
+	app.use("/users", userRouter);
 }
 
 module.exports = configRouter;
