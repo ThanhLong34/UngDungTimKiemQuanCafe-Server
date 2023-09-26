@@ -2,8 +2,8 @@ const UserAccountSchema = require("../models/userAccount.model");
 const { userAccountValidator } = require("../validators");
 
 class userAccountController {
-	// [GET] /users
-	async getAll(req, res, next) {
+	// [GET] /userAccounts
+	async getList(req, res, next) {
 		try {
 			const listResultFound = await UserAccountSchema.find({})
 				.sortable(req)
@@ -17,12 +17,12 @@ class userAccountController {
 					code: 1,
 					data: listResultFound,
 					totalLength: allDocuments.length,
-					message: "Lấy danh sách người dùng thành công",
+					message: "Lấy danh sách thành công",
 				});
 			} else {
 				res.json({
 					code: 2,
-					message: "Lấy danh sách người dùng thất bại",
+					message: "Lấy danh sách thất bại",
 				});
 			}
 		} catch (error) {
@@ -30,7 +30,7 @@ class userAccountController {
 		}
 	}
 
-	// [GET] /users/:id
+	// [GET] /userAccounts/:id
 	async findById(req, res, next) {
 		try {
 			const id = req.params.id;
@@ -42,12 +42,12 @@ class userAccountController {
 				res.json({
 					code: 1,
 					data: { ...itemFound._doc, password: null },
-					message: "Đã tìm thấy tài khoản người dùng",
+					message: "Đã tìm thấy",
 				});
 			} else {
 				res.json({
 					code: 2,
-					message: "Không tìm thấy tài khoản người dùng",
+					message: "Không tìm thấy",
 				});
 			}
 		} catch (error) {
@@ -55,12 +55,12 @@ class userAccountController {
 		}
 	}
 
-	// [POST] /users/register
+	// [POST] /userAccounts/register
 	async register(req, res, next) {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userAccountValidator.register(payload);
+			const { error } = userAccountValidator.loginOrRegister(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -70,12 +70,12 @@ class userAccountController {
 			}
 
 			const itemExisted = await UserAccountSchema.findOne({
-				email: payload.email,
+				$or: [{ email: payload.email }, { phone: payload.phone }],
 			});
 			if (itemExisted) {
 				res.json({
 					code: 3,
-					message: "Email đã tồn tại",
+					message: "Email hoặc Số điện thoại đã tồn tại",
 				});
 				return;
 			}
@@ -87,19 +87,19 @@ class userAccountController {
 			res.json({
 				code: 1,
 				data: { ...saveUserResult._doc, password: null },
-				message: "Tạo tài khoản người dùng thành công",
+				message: "Tạo tài khoản thành công",
 			});
 		} catch (error) {
 			next(error);
 		}
 	}
 
-	// [POST] /users/login
+	// [POST] /userAccounts/login
 	async login(req, res, next) {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userAccountValidator.login(payload);
+			const { error } = userAccountValidator.loginOrRegister(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -108,18 +108,18 @@ class userAccountController {
 				return;
 			}
 
-			const userExist = await UserAccountSchema.findOne({
-				email: payload.email,
+			const accountExisted = await UserAccountSchema.findOne({
+				$and: [{ email: payload.email }, { phone: payload.phone }],
 			});
-			if (!userExist) {
+			if (!accountExisted) {
 				res.json({
 					code: 3,
-					message: `Không tìm thấy tài khoản có email: ${payload.email}`,
+					message: "Không tìm thấy tài khoản",
 				});
 				return;
 			}
 
-			const isMatchPassword = await userExist.isMatchPassword(
+			const isMatchPassword = await accountExisted.isMatchPassword(
 				payload.password
 			);
 			if (!isMatchPassword) {
@@ -132,7 +132,7 @@ class userAccountController {
 
 			res.json({
 				code: 1,
-				data: { ...userExist._doc, password: null },
+				data: { ...accountExisted._doc, password: null },
 				message: "Đăng nhập thành công",
 			});
 		} catch (error) {
@@ -140,15 +140,12 @@ class userAccountController {
 		}
 	}
 
-	// [PUT] /users/:id/updatePasswordById
+	// [PUT] /userAccounts/:id/updatePasswordById
 	async updatePasswordById(req, res, next) {
 		try {
-			// Lấy id từ params
-			const userId = req.params.id;
-			// Lấy password mới từ body của request
+			const id = req.params.id;
 			const newPassword = req.body.password;
 
-			// Xác thực password mới
 			const { error } = userAccountValidator.updatePassword(newPassword);
 			if (error) {
 				res.json({
@@ -158,33 +155,30 @@ class userAccountController {
 				return;
 			}
 
-			// Tìm tài khoản người dùng để cập nhật mật khẩu mới (newPassword)
-			const userFound = await UserAccountSchema.findOne({
-				_id: userId,
+			const itemFound = await UserAccountSchema.findOne({
+				_id: id,
 			});
-			if (!userFound) {
+			if (!itemFound) {
 				res.json({
 					code: 5,
-					message: "Không tìm thấy tài khoản người dùng",
+					message: "Không tìm thấy tài khoản",
 				});
 				return;
 			}
 
-			// Cập nhật mật khẩu mới (newPassword)
-			userFound.password = newPassword;
-			const saveUserResult = await userFound.save();
+			itemFound.password = newPassword;
+			const saveResult = await itemFound.save();
 
 			res.json({
 				code: 1,
-				message: "Cập nhật mật khẩu tài khoản người dùng thành công",
+				message: "Cập nhật mật khẩu tài khoản thành công",
 			});
 		} catch (error) {
-			// Bắt lỗi
 			next(error);
 		}
 	}
 
-	// [DELETE] /users/:id
+	// [DELETE] /userAccounts/:id
 	async deleteById(req, res, next) {
 		try {
 			const id = req.params.id;
@@ -195,12 +189,12 @@ class userAccountController {
 			if (deleteResult.deletedCount > 0) {
 				res.json({
 					code: 1,
-					message: "Xóa người dùng thành công",
+					message: "Xóa thành công",
 				});
 			} else {
 				res.json({
 					code: 2,
-					message: "Không tìm thấy người dùng cần xóa",
+					message: "Không tìm thấy document cần xóa",
 				});
 			}
 		} catch (error) {

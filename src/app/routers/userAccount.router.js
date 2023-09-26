@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userAccountController = require("../controllers/userAccount.controller");
 
-router.get("/", userAccountController.getAll);
+router.get("/", userAccountController.getList);
 router.get("/:id", userAccountController.findById);
 router.post("/register", userAccountController.register);
 router.post("/login", userAccountController.login);
