@@ -13,7 +13,9 @@ const {
 } = require("./app/middlewares");
 
 //? Kết nối MongoDB
-mongoDBConnect.connect();
+(async () => {
+	await mongoDBConnect.connect()
+})();
 
 //? Khởi tạo App
 const app = express();
