@@ -3,18 +3,11 @@ const Joi = require("joi");
 module.exports = {
 	register(data) {
 		const schema = Joi.object({
-			email: Joi.string()
-				.trim()
-				.required()
-				.empty()
-				.strict()
-				.email()
-				.messages({
-					"string.trim": "Email không được chứa khoảng trắng đầu và cuối",
-					"any.required": "Bắt buộc phải có Email",
-					"string.empty": "Email không được để trống",
-					"string.email": "Email không hợp lệ",
-				}),
+			fullname: Joi.string().trim().required().empty().strict().messages({
+				"string.trim": "Họ và tên không được chứa khoảng trắng đầu và cuối",
+				"any.required": "Bắt buộc phải có Họ và tên",
+				"string.empty": "Họ và tên không được để trống",
+			}),
 			phoneNumber: Joi.string()
 				.regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)
 				.trim()
@@ -27,6 +20,18 @@ module.exports = {
 					"any.required": "Bắt buộc phải có Số điện thoại",
 					"string.empty": "Số điện thoại không được để trống",
 					"string.pattern.base": "Số điện thoại không hợp lệ",
+				}),
+			email: Joi.string()
+				.trim()
+				.required()
+				.empty()
+				.strict()
+				.email()
+				.messages({
+					"string.trim": "Email không được chứa khoảng trắng đầu và cuối",
+					"any.required": "Bắt buộc phải có Email",
+					"string.empty": "Email không được để trống",
+					"string.email": "Email không hợp lệ",
 				}),
 			password: Joi.string()
 				.trim()
@@ -41,6 +46,12 @@ module.exports = {
 					"string.empty": "Mật khẩu không được để trống",
 					"string.min": "Mật khẩu phải chứa ít nhất 5 ký tự",
 				}),
+			isOwnerShop: Joi.boolean().strict(),
+			priceId: Joi.string().trim().empty().strict().messages({
+				"string.trim":
+					"ID bảng giá không được chứa khoảng trắng đầu và cuối",
+				"string.empty": "ID bảng giá không được để trống",
+			}),
 		});
 
 		return schema.validate(data);
@@ -48,16 +59,6 @@ module.exports = {
 
 	login(data) {
 		const schema = Joi.object({
-			email: Joi.string()
-				.trim()
-				.empty()
-				.strict()
-				.email()
-				.messages({
-					"string.trim": "Email không được chứa khoảng trắng đầu và cuối",
-					"string.empty": "Email không được để trống",
-					"string.email": "Email không hợp lệ",
-				}),
 			phoneNumber: Joi.string()
 				.regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)
 				.trim()
@@ -69,6 +70,11 @@ module.exports = {
 					"string.empty": "Số điện thoại không được để trống",
 					"string.pattern.base": "Số điện thoại không hợp lệ",
 				}),
+			email: Joi.string().trim().empty().strict().email().messages({
+				"string.trim": "Email không được chứa khoảng trắng đầu và cuối",
+				"string.empty": "Email không được để trống",
+				"string.email": "Email không hợp lệ",
+			}),
 			password: Joi.string()
 				.trim()
 				.required()
