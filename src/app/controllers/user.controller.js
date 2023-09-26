@@ -70,7 +70,7 @@ class userController {
 			}
 
 			const itemExisted = await UserSchema.findOne({
-				$or: [{ email: payload.email }, { phone: payload.phone }],
+				$or: [{ email: payload.email }, { phoneNumber: payload.phoneNumber }],
 			});
 			if (itemExisted) {
 				res.json({
@@ -109,7 +109,7 @@ class userController {
 			}
 
 			const accountExisted = await UserSchema.findOne({
-				$or: [{ email: payload.email }, { phone: payload.phone }],
+				$or: [{ email: payload.email }, { phoneNumber: payload.phoneNumber }],
 			});
 			if (!accountExisted) {
 				res.json({
