@@ -60,7 +60,7 @@ class userAccountController {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userAccountValidator.loginOrRegister(payload);
+			const { error } = userAccountValidator.register(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -99,7 +99,7 @@ class userAccountController {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userAccountValidator.loginOrRegister(payload);
+			const { error } = userAccountValidator.login(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -109,7 +109,7 @@ class userAccountController {
 			}
 
 			const accountExisted = await UserAccountSchema.findOne({
-				$and: [{ email: payload.email }, { phone: payload.phone }],
+				$or: [{ email: payload.email }, { phone: payload.phone }],
 			});
 			if (!accountExisted) {
 				res.json({
@@ -144,7 +144,7 @@ class userAccountController {
 	async updatePasswordById(req, res, next) {
 		try {
 			const id = req.params.id;
-			const newPassword = req.body.password;
+			const newPassword = req.body.newPassword;
 
 			const { error } = userAccountValidator.updatePassword(newPassword);
 			if (error) {
