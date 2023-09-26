@@ -1,5 +1,5 @@
-const userAccountValidator = require('./userAccount.validator')
+const userValidator = require('./user.validator')
 
 module.exports = {
-	userAccountValidator,
+	userValidator,
 }

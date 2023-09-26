@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
 
-const UserAccountSchema = new Schema({
+const UserSchema = new Schema({
 	email: { type: String, maxLength: 255, required: true, unique: true },
 	phone: { type: String, maxLength: 255, required: true, unique: true },
 	password: { type: String, maxLength: 255, required: true },
@@ -10,7 +10,7 @@ const UserAccountSchema = new Schema({
 
 // Hash password pre save or create user
 // Dont use arrow function because it does not have context
-UserAccountSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function (next) {
 	try {
 		const salt = await bcrypt.genSalt(10);
 		const hashPassword = await bcrypt.hash(this.password, salt);
@@ -22,7 +22,7 @@ UserAccountSchema.pre("save", async function (next) {
 });
 
 // Custom query
-UserAccountSchema.query.sortable = function (req) {
+UserSchema.query.sortable = function (req) {
 	const isSort =
 		req.query.hasOwnProperty("sortColumn") &&
 		req.query.hasOwnProperty("sortType");
@@ -40,7 +40,7 @@ UserAccountSchema.query.sortable = function (req) {
 
 	return this;
 };
-UserAccountSchema.query.searchable = function (req) {
+UserSchema.query.searchable = function (req) {
 	const isSearch =
 		req.query.hasOwnProperty("searchType") &&
 		req.query.hasOwnProperty("searchValue");
@@ -54,7 +54,7 @@ UserAccountSchema.query.searchable = function (req) {
 
 	return this;
 };
-UserAccountSchema.query.limitable = function (req) {
+UserSchema.query.limitable = function (req) {
 	const isLimit = req.query.hasOwnProperty("limit");
 	const isOffset = req.query.hasOwnProperty("offset");
 	if (isLimit && isOffset) {
@@ -73,10 +73,10 @@ UserAccountSchema.query.limitable = function (req) {
 };
 
 // Custom methods
-UserAccountSchema.methods.isMatchPassword = async function (password) {
+UserSchema.methods.isMatchPassword = async function (password) {
 	try {
 		return await bcrypt.compare(password, this.password);
 	} catch (error) {}
 };
 
-module.exports = mongoose.model("user_accounts", UserAccountSchema);
+module.exports = mongoose.model("user_accounts", UserSchema);
