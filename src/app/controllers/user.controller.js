@@ -119,10 +119,10 @@ class userController {
 				return;
 			}
 
-			const isMatchPassword = await accountExisted.isMatchPassword(
+			const checkMatchPassword = await accountExisted.checkMatchPassword(
 				payload.password
 			);
-			if (!isMatchPassword) {
+			if (!checkMatchPassword) {
 				res.json({
 					code: 4,
 					message: `Sai mật khẩu`,
