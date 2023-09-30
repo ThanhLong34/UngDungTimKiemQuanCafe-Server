@@ -10,7 +10,7 @@ const { checkMatchPassword } = require("../../utils/customMethods");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-	fullname: { type: String, maxLength: 255, required: true },
+	fullName: { type: String, maxLength: 255, required: true },
 	phoneNumber: { type: String, maxLength: 255, required: true, unique: true },
 	email: { type: String, maxLength: 255, required: true, unique: true },
 	password: { type: String, maxLength: 255, required: true },
