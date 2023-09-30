@@ -70,7 +70,10 @@ class userController {
 			}
 
 			const itemExisted = await UserSchema.findOne({
-				$or: [{ email: payload.email }, { phoneNumber: payload.phoneNumber }],
+				$or: [
+					{ email: payload.email },
+					{ phoneNumber: payload.phoneNumber },
+				],
 			});
 			if (itemExisted) {
 				res.json({
@@ -109,7 +112,10 @@ class userController {
 			}
 
 			const accountExisted = await UserSchema.findOne({
-				$or: [{ email: payload.email }, { phoneNumber: payload.phoneNumber }],
+				$or: [
+					{ email: payload.email },
+					{ phoneNumber: payload.phoneNumber },
+				],
 			});
 			if (!accountExisted) {
 				res.json({
@@ -143,8 +149,7 @@ class userController {
 	// [PUT] /users/:id/updatePasswordById
 	async updatePasswordById(req, res, next) {
 		try {
-			const id = req.params.id;
-			const newPassword = req.body.newPassword;
+			const { id, newPassword } = req.params;
 
 			const { error } = userValidator.updatePassword(newPassword);
 			if (error) {
@@ -172,6 +177,44 @@ class userController {
 			res.json({
 				code: 1,
 				message: "Cập nhật mật khẩu tài khoản thành công",
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// [PUT] /users/:id/upgrade
+	async upgradeById(req, res, next) {
+		try {
+			const { id, priceId } = req.params;
+
+			const { error } = userValidator.upgrade(priceId);
+			if (error) {
+				res.json({
+					code: 4,
+					message: error.message,
+				});
+				return;
+			}
+
+			const itemFound = await UserSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy tài khoản",
+				});
+				return;
+			}
+
+			itemFound.isOwnerShop = true;
+			itemFound.priceId = priceId;
+			const saveResult = await itemFound.save();
+
+			res.json({
+				code: 1,
+				message: "Nâng cấp tài khoản thành công",
 			});
 		} catch (error) {
 			next(error);
