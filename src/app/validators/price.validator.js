@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 module.exports = {
-	create(data) {
+	createOrUpdate(data) {
 		const schema = Joi.object({
 			title: Joi.string()
 				.trim()
@@ -24,7 +24,7 @@ module.exports = {
 					"string.max": "features item không được quá 255 ký tự",
 				})
 			),
-			costPerMonth: Joi.number().strict().required().message({
+			costPerMonth: Joi.number().strict().required().messages({
 				"any.required": "Bắt buộc phải có costPerMonth",
 			})
 		});
