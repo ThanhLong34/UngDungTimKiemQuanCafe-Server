@@ -3,7 +3,7 @@ const Joi = require("joi");
 module.exports = {
 	register(data) {
 		const schema = Joi.object({
-			fullname: Joi.string().trim().required().empty().strict().messages({
+			fullName: Joi.string().trim().required().empty().strict().messages({
 				"string.trim": "Họ và tên không được chứa khoảng trắng đầu và cuối",
 				"any.required": "Bắt buộc phải có Họ và tên",
 				"string.empty": "Họ và tên không được để trống",

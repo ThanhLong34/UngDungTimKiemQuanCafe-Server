@@ -53,6 +53,7 @@ const {
 	app.use(limitMiddleware); // Limit & Offset middleware
 
 	//? Static folder
+	// localhost/upload/...
 	app.use("/", express.static(path.join(__dirname, "../public")));
 
 	//? Cấu hình routes
@@ -75,6 +76,6 @@ const {
 
 	//? Khởi chạy máy chủ
 	app.listen(PORT, () => {
-		console.log(`Máy chủ đang chạy trên: http://localhost:${PORT}`);
+		console.log(`🚀 Máy chủ đang chạy trên: http://localhost:${PORT}`);
 	});
 })();
