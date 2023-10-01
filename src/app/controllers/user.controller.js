@@ -149,7 +149,8 @@ class userController {
 	// [PUT] /users/:id/updatePasswordById
 	async updatePasswordById(req, res, next) {
 		try {
-			const { id, newPassword } = req.params;
+			const { id } = req.params;
+			const { newPassword } = req.body
 
 			const { error } = userValidator.updatePassword(newPassword);
 			if (error) {
@@ -183,10 +184,49 @@ class userController {
 		}
 	}
 
+	// [PUT] /users/:id/updateFavoritesById
+	async updateFavoritesById(req, res, next) {
+		try {
+			const { id } = req.params;
+			const { favorites } = req.body
+
+			const { error } = userValidator.updateFavorites(favorites);
+			if (error) {
+				res.json({
+					code: 4,
+					message: error.message,
+				});
+				return;
+			}
+
+			const itemFound = await UserSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy tài khoản",
+				});
+				return;
+			}
+
+			itemFound.favourites = favorites;
+			const saveResult = await itemFound.save();
+
+			res.json({
+				code: 1,
+				message: "Cập nhật favorites tài khoản thành công",
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
 	// [PUT] /users/:id/upgrade
 	async upgradeById(req, res, next) {
 		try {
-			const { id, priceId } = req.params;
+			const { id } = req.params;
+			const { priceId } = req.body;
 
 			const { error } = userValidator.upgrade(priceId);
 			if (error) {

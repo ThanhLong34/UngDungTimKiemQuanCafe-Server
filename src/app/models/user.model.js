@@ -14,7 +14,8 @@ const UserSchema = new Schema({
 	phoneNumber: { type: String, maxLength: 255, required: true, unique: true },
 	email: { type: String, maxLength: 255, required: true, unique: true },
 	password: { type: String, maxLength: 255, required: true },
-	favourites: { type: [String], default: [] },
+	favourites: {
+		type: [String], default: [] },
 	isOwnerShop: { type: Boolean, default: false },
 	priceId: { type: String, default: null },
 });

@@ -140,4 +140,15 @@ module.exports = {
 
 		return schema.validate(priceId);
 	},
+
+	updateFavorites(favorites) {
+		const schema = Joi.array().items(
+			Joi.string().trim().empty().strict().messages({
+				"string.trim": "favorites item không được chứa khoảng trắng đầu và cuối",
+				"string.empty": "favorites item không được để trống",
+			})
+		);
+
+		return schema.validate(favorites);
+	},
 };
