@@ -140,4 +140,25 @@ module.exports = {
 
 		return schema.validate(priceId);
 	},
+
+	updateFavourites(favourites) {
+		const schema = Joi.array().items(
+			Joi.string().trim().empty().strict().messages({
+				"string.trim": "favourites item không được chứa khoảng trắng đầu và cuối",
+				"string.empty": "favourites item không được để trống",
+			})
+		);
+
+		return schema.validate(favourites);
+	},
+
+	addOrRemoveFavourite(shopId) {
+		const schema = Joi.string().trim().required().empty().strict().messages({
+			"string.trim": "shopId không được chứa khoảng trắng đầu và cuối",
+			"any.required": "Bắt buộc phải có shopId",
+			"string.empty": "shopId không được để trống",
+		});
+
+		return schema.validate(shopId);
+	},
 };
