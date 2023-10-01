@@ -1,5 +1,5 @@
 const ShopSchema = require("../models/shop.model");
-const { shopValidator } = require("../validators");
+const { ShopValidator } = require("../validators");
 
 class ShopController {
 	// [GET] /shops
@@ -60,7 +60,7 @@ class ShopController {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = shopValidator.createOrUpdate(payload);
+			const { error } = ShopValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -83,13 +83,84 @@ class ShopController {
 		}
 	}
 
+	// [POST] /shops/:id/uploadImage
+	async uploadImage(req, res, next) {
+		try {
+			const { id } = req.params;
+			const imageObject = res.locals.imageObject
+
+			const itemFound = await ShopSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy shop",
+				});
+				return;
+			}
+
+			itemFound.imageIds.push(imageObject._id.toString())
+			const saveResult = await itemFound.save();
+
+			res.json({
+				code: 1,
+				message: "Upload hình ảnh thành công",
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// [POST] /shops/:id/deleteImage
+	async deleteImage(req, res, next) {
+		try {
+			const { id } = req.params;
+			const { imageId } = req.body;
+
+			const { error } = ShopValidator.deleteImage(imageId);
+			if (error) {
+				res.json({
+					code: 2,
+					message: error.message,
+				});
+				return;
+			}
+
+			const itemFound = await ShopSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy shop",
+				});
+				return;
+			}
+
+			itemFound.imageIds = itemFound.imageIds.filter(i => i !== imageId)
+			const saveResult = await itemFound.save();
+
+			// res.json({
+			// 	code: 1,
+			// 	message: "Delete hình ảnh thành công",
+			// });
+
+			req.params.id = null
+			res.locals.id = imageId
+			next()
+		} catch (error) {
+			next(error);
+		}
+	}
+
 	// [PUT] /shops/:id
 	async updateById(req, res, next) {
 		try {
 			const id = req.params.id;
 			const payload = { ...req.body };
 
-			const { error } = shopValidator.createOrUpdate(payload);
+			const { error } = ShopValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 4,
@@ -126,20 +197,15 @@ class ShopController {
 		try {
 			const id = req.params.id;
 
-			const deleteResult = await ShopSchema.deleteOne({
+			const deleteResult = await ShopSchema.delete({
 				_id: id,
 			});
-			if (deleteResult.deletedCount > 0) {
-				res.json({
-					code: 1,
-					message: "Xóa thành công",
-				});
-			} else {
-				res.json({
-					code: 2,
-					message: "Không tìm thấy document cần xóa",
-				});
-			}
+			
+			res.json({
+				code: 1,
+				data: deleteResult,
+				message: "Xóa thành công",
+			});
 		} catch (error) {
 			next(error);
 		}

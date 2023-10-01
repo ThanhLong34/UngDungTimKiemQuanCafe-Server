@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/user.controller");
+const UserController = require("../controllers/user.controller");
 
-router.get("/", userController.getList);
-router.get("/:id", userController.findById);
-router.post("/register", userController.register);
-router.post("/login", userController.login);
-router.post("/:id/addFavouriteById", userController.addFavouriteById);
-router.post("/:id/removeFavouriteById", userController.removeFavouriteById);
-router.put("/:id/updatePasswordById", userController.updatePasswordById);
-router.put("/:id/updateFavouritesById", userController.updateFavouritesById);
-router.put("/:id/upgradeById", userController.upgradeById);
-router.delete("/:id", userController.deleteById);
+router.get("/", UserController.getList);
+router.get("/:id", UserController.findById);
+router.post("/register", UserController.register);
+router.post("/login", UserController.login);
+router.post("/:id/addFavouriteById", UserController.addFavouriteById);
+router.post("/:id/removeFavouriteById", UserController.removeFavouriteById);
+router.put("/:id/updatePasswordById", UserController.updatePasswordById);
+router.put("/:id/updateFavouritesById", UserController.updateFavouritesById);
+router.put("/:id/upgradeById", UserController.upgradeById);
+router.delete("/:id", UserController.deleteById);
 
 module.exports = router;

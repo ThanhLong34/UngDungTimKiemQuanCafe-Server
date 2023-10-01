@@ -1,16 +1,16 @@
-const PriceSchema = require("../models/price.model");
-const { PriceValidator } = require("../validators");
+const FeedbackSchema = require("../models/feedback.model");
+const { FeedbackValidator } = require("../validators");
 
-class PriceController {
-	// [GET] /prices
+class FeedbackController {
+	// [GET] /feedbacks
 	async getList(req, res, next) {
 		try {
-			const listResultFound = await PriceSchema.find({})
+			const listResultFound = await FeedbackSchema.find({})
 				.sortable(req)
 				.searchable(req)
 				.limitable(req);
 
-			const allDocuments = await PriceSchema.find({}).searchable(req);
+			const allDocuments = await FeedbackSchema.find({}).searchable(req);
 
 			if (listResultFound) {
 				res.json({
@@ -30,11 +30,11 @@ class PriceController {
 		}
 	}
 
-	// [GET] /prices/:id
+	// [GET] /feedbacks/:id
 	async findById(req, res, next) {
 		try {
 			const id = req.params.id;
-			const itemFound = await PriceSchema.findOne({
+			const itemFound = await FeedbackSchema.findOne({
 				_id: id,
 			});
 
@@ -55,12 +55,12 @@ class PriceController {
 		}
 	}
 
-	// [POST] /prices
+	// [POST] /feedbacks
 	async create(req, res, next) {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = PriceValidator.createOrUpdate(payload);
+			const { error } = FeedbackValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -70,7 +70,7 @@ class PriceController {
 			}
 
 			// create method in Schema not allowed handle prev middleware in mongoose
-			const newDocument = new PriceSchema(payload);
+			const newDocument = new FeedbackSchema(payload);
 			const createResult = await newDocument.save();
 
 			res.json({
@@ -83,13 +83,13 @@ class PriceController {
 		}
 	}
 
-	// [PUT] /prices/:id
+	// [PUT] /feedbacks/:id
 	async updateById(req, res, next) {
 		try {
 			const id = req.params.id;
 			const payload = { ...req.body };
 
-			const { error } = PriceValidator.createOrUpdate(payload);
+			const { error } = FeedbackValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 4,
@@ -98,7 +98,7 @@ class PriceController {
 				return;
 			}
 
-			const updateResult = await PriceSchema.updateOne(
+			const updateResult = await FeedbackSchema.updateOne(
 				{
 					_id: id,
 				},
@@ -121,12 +121,12 @@ class PriceController {
 		}
 	}
 
-	// [DELETE] /prices/:id
+	// [DELETE] /feedbacks/:id
 	async deleteById(req, res, next) {
 		try {
 			const id = req.params.id;
 
-			const deleteResult = await PriceSchema.delete({
+			const deleteResult = await FeedbackSchema.delete({
 				_id: id,
 			});
 			
@@ -141,4 +141,4 @@ class PriceController {
 	}
 }
 
-module.exports = new PriceController();
+module.exports = new FeedbackController();

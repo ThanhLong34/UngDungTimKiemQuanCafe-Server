@@ -99,9 +99,23 @@ module.exports = {
 				price: Joi.number().strict(),
 			}),
 			favouriteQuantity: Joi.number().strict(),
-			userId: Joi.string().strict(),
+			userId: Joi.string().trim().empty().strict().messages({
+				"string.trim": "userId không được chứa khoảng trắng đầu và cuối",
+				"any.required": "Bắt buộc phải có userId",
+				"string.empty": "userId không được để trống",
+			}),
 		});
 
 		return schema.validate(data);
 	},
+
+	deleteImage(imageId) {
+		const schema = Joi.string().trim().empty().strict().messages({
+			"string.trim": "imageId không được chứa khoảng trắng đầu và cuối",
+			"any.required": "Bắt buộc phải có imageId",
+			"string.empty": "imageId không được để trống",
+		})
+
+		return schema.validate(imageId);
+	}
 };

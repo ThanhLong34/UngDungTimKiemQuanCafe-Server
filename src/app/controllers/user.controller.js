@@ -1,5 +1,5 @@
 const UserSchema = require("../models/user.model");
-const { userValidator } = require("../validators");
+const { UserValidator } = require("../validators");
 const ShopService = require("../services/shop.service");
 
 class UserController {
@@ -61,7 +61,7 @@ class UserController {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userValidator.register(payload);
+			const { error } = UserValidator.register(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -103,7 +103,7 @@ class UserController {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = userValidator.login(payload);
+			const { error } = UserValidator.login(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -153,7 +153,7 @@ class UserController {
 			const { id } = req.params;
 			const { shopId } = req.body;
 
-			const { error } = userValidator.addOrRemoveFavourite(shopId);
+			const { error } = UserValidator.addOrRemoveFavourite(shopId);
 			if (error) {
 				res.json({
 					code: 4,
@@ -203,7 +203,7 @@ class UserController {
 			const { id } = req.params;
 			const { shopId } = req.body;
 
-			const { error } = userValidator.addOrRemoveFavourite(shopId);
+			const { error } = UserValidator.addOrRemoveFavourite(shopId);
 			if (error) {
 				res.json({
 					code: 4,
@@ -253,7 +253,7 @@ class UserController {
 			const { id } = req.params;
 			const { newPassword } = req.body;
 
-			const { error } = userValidator.updatePassword(newPassword);
+			const { error } = UserValidator.updatePassword(newPassword);
 			if (error) {
 				res.json({
 					code: 4,
@@ -291,7 +291,7 @@ class UserController {
 			const { id } = req.params;
 			const { favourites } = req.body;
 
-			const { error } = userValidator.updateFavourites(favourites);
+			const { error } = UserValidator.updateFavourites(favourites);
 			if (error) {
 				res.json({
 					code: 4,
@@ -329,7 +329,7 @@ class UserController {
 			const { id } = req.params;
 			const { priceId } = req.body;
 
-			const { error } = userValidator.upgrade(priceId);
+			const { error } = UserValidator.upgrade(priceId);
 			if (error) {
 				res.json({
 					code: 4,
@@ -367,20 +367,15 @@ class UserController {
 		try {
 			const id = req.params.id;
 
-			const deleteResult = await UserSchema.deleteOne({
+			const deleteResult = await UserSchema.delete({
 				_id: id,
 			});
-			if (deleteResult.deletedCount > 0) {
-				res.json({
-					code: 1,
-					message: "Xóa thành công",
-				});
-			} else {
-				res.json({
-					code: 2,
-					message: "Không tìm thấy document cần xóa",
-				});
-			}
+			
+			res.json({
+				code: 1,
+				data: deleteResult,
+				message: "Xóa thành công",
+			});
 		} catch (error) {
 			next(error);
 		}

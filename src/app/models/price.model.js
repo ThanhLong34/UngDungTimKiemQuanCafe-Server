@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongooseDelete = require("mongoose-delete");
 const {
 	sortable,
 	searchable,
@@ -21,11 +22,17 @@ const PriceSchema = new Schema({
 		default: [],
 	},
 	costPerMonth: { type: Number, required: true },
-});
+}, { timestamps: true });
 
 // Custom queries
 PriceSchema.query.sortable = sortable;
 PriceSchema.query.searchable = searchable;
 PriceSchema.query.limitable = limitable;
+
+// Add plugin
+PriceSchema.plugin(mongooseDelete, {
+	overrideMethods: "all",
+	deletedAt: true,
+});
 
 module.exports = mongoose.model("prices", PriceSchema);
