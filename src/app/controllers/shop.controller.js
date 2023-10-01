@@ -83,6 +83,77 @@ class ShopController {
 		}
 	}
 
+	// [POST] /shops/:id/uploadImage
+	async uploadImage(req, res, next) {
+		try {
+			const { id } = req.params;
+			const imageObject = res.locals.imageObject
+
+			const itemFound = await ShopSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy shop",
+				});
+				return;
+			}
+
+			itemFound.imageIds.push(imageObject._id.toString())
+			const saveResult = await itemFound.save();
+
+			res.json({
+				code: 1,
+				message: "Upload hình ảnh thành công",
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// [POST] /shops/:id/deleteImage
+	async deleteImage(req, res, next) {
+		try {
+			const { id } = req.params;
+			const { imageId } = req.body;
+
+			const { error } = ShopValidator.deleteImage(imageId);
+			if (error) {
+				res.json({
+					code: 2,
+					message: error.message,
+				});
+				return;
+			}
+
+			const itemFound = await ShopSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy shop",
+				});
+				return;
+			}
+
+			itemFound.imageIds = itemFound.imageIds.filter(i => i !== imageId)
+			const saveResult = await itemFound.save();
+
+			// res.json({
+			// 	code: 1,
+			// 	message: "Delete hình ảnh thành công",
+			// });
+
+			req.params.id = null
+			res.locals.id = imageId
+			next()
+		} catch (error) {
+			next(error);
+		}
+	}
+
 	// [PUT] /shops/:id
 	async updateById(req, res, next) {
 		try {

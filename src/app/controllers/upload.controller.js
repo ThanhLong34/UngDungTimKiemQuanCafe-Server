@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const ImageSchema = require("../models/image.model");
+const { UploadValidator } = require("../validators");
 const multer = require("multer");
 const path = require("path");
 const { unlink } = require("node:fs/promises");
@@ -29,10 +31,45 @@ const upload = multer({
 }).single("image");
 
 class UploadController {
-	async getURLsByIds(ids) {}
+	async getImages(req, res, next) {
+		try {
+			const { ids } = req.body;
+
+			const { error } = UploadValidator.getImages(ids);
+			if (error) {
+				res.json({
+					code: 2,
+					message: error.message,
+				});
+				return;
+			}
+
+			const mongooseIds = ids.map((i) => new mongoose.Types.ObjectId(i));
+
+			const listResultFound = await ImageSchema.find({
+				_id: {
+					$in: mongooseIds,
+				},
+			});
+			if (listResultFound) {
+				res.json({
+					code: 1,
+					data: listResultFound,
+					message: "Lấy danh sách thành công",
+				});
+			} else {
+				res.json({
+					code: 2,
+					message: "Lấy danh sách thất bại",
+				});
+			}
+		} catch (error) {
+			next(error);
+		}
+	}
 
 	// [POST] /uploads
-	async uploadImage(req, res) {
+	async uploadImage(req, res, next) {
 		upload(req, res, async function (err) {
 			if (err) {
 				res.json({
@@ -49,11 +86,14 @@ class UploadController {
 				const newDocument = new ImageSchema(payload);
 				const createResult = await newDocument.save();
 
-				res.json({
-					code: 1,
-					data: { ...createResult._doc },
-					message: "Tạo thành công",
-				});
+				// res.json({
+				// 	code: 1,
+				// 	data: { ...createResult._doc },
+				// 	message: "Tạo thành công",
+				// });
+
+				res.locals.imageObject = { ...createResult._doc };
+				next();
 			} catch (error) {
 				console.error(error);
 				return error;
@@ -64,7 +104,7 @@ class UploadController {
 	// [DELETE] /uploads/:id
 	async deleteImage(req, res, next) {
 		try {
-			const id = req.params.id;
+			const id = req.params.id || res.locals.id;
 
 			const itemExisted = await ImageSchema.findOne({
 				_id: id,
