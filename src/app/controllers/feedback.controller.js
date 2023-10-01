@@ -1,16 +1,16 @@
-const ShopSchema = require("../models/shop.model");
-const { ShopValidator } = require("../validators");
+const FeedbackSchema = require("../models/feedback.model");
+const { FeedbackValidator } = require("../validators");
 
-class ShopController {
-	// [GET] /shops
+class FeedbackController {
+	// [GET] /feedbacks
 	async getList(req, res, next) {
 		try {
-			const listResultFound = await ShopSchema.find({})
+			const listResultFound = await FeedbackSchema.find({})
 				.sortable(req)
 				.searchable(req)
 				.limitable(req);
 
-			const allDocuments = await ShopSchema.find({}).searchable(req);
+			const allDocuments = await FeedbackSchema.find({}).searchable(req);
 
 			if (listResultFound) {
 				res.json({
@@ -30,11 +30,11 @@ class ShopController {
 		}
 	}
 
-	// [GET] /shops/:id
+	// [GET] /feedbacks/:id
 	async findById(req, res, next) {
 		try {
 			const id = req.params.id;
-			const itemFound = await ShopSchema.findOne({
+			const itemFound = await FeedbackSchema.findOne({
 				_id: id,
 			});
 
@@ -55,12 +55,12 @@ class ShopController {
 		}
 	}
 
-	// [POST] /shops
+	// [POST] /feedbacks
 	async create(req, res, next) {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = ShopValidator.createOrUpdate(payload);
+			const { error } = FeedbackValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -70,7 +70,7 @@ class ShopController {
 			}
 
 			// create method in Schema not allowed handle prev middleware in mongoose
-			const newDocument = new ShopSchema(payload);
+			const newDocument = new FeedbackSchema(payload);
 			const createResult = await newDocument.save();
 
 			res.json({
@@ -83,13 +83,13 @@ class ShopController {
 		}
 	}
 
-	// [PUT] /shops/:id
+	// [PUT] /feedbacks/:id
 	async updateById(req, res, next) {
 		try {
 			const id = req.params.id;
 			const payload = { ...req.body };
 
-			const { error } = ShopValidator.createOrUpdate(payload);
+			const { error } = FeedbackValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 4,
@@ -98,7 +98,7 @@ class ShopController {
 				return;
 			}
 
-			const updateResult = await ShopSchema.updateOne(
+			const updateResult = await FeedbackSchema.updateOne(
 				{
 					_id: id,
 				},
@@ -121,12 +121,12 @@ class ShopController {
 		}
 	}
 
-	// [DELETE] /shops/:id
+	// [DELETE] /feedbacks/:id
 	async deleteById(req, res, next) {
 		try {
 			const id = req.params.id;
 
-			const deleteResult = await ShopSchema.delete({
+			const deleteResult = await FeedbackSchema.delete({
 				_id: id,
 			});
 			
@@ -141,4 +141,4 @@ class ShopController {
 	}
 }
 
-module.exports = new ShopController();
+module.exports = new FeedbackController();

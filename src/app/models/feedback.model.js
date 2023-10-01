@@ -11,18 +11,9 @@ const Schema = mongoose.Schema;
 const FeedbackSchema = new Schema({
 	star: { type: Number, required: true },
 	comment: { type: String, maxLength: 1000, required: true },
-	postDate: { type: Date, required: true },
-	features: {
-		type: [
-			{
-				type: String,
-				maxlength: 255,
-				default: ''
-			},
-		],
-		default: [],
-	},
-	costPerMonth: { type: Number, required: true },
+	postDate: { type: Date, default: Date.now },
+	userId: { type: String, required: true },
+	shopId: { type: String, required: true },
 }, { timestamps: true });
 
 // Custom queries
@@ -36,4 +27,4 @@ FeedbackSchema.plugin(mongooseDelete, {
 	deletedAt: true,
 });
 
-module.exports = mongoose.model("prices", FeedbackSchema);
+module.exports = mongoose.model("feedbacks", FeedbackSchema);

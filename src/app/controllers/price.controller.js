@@ -1,5 +1,5 @@
 const PriceSchema = require("../models/price.model");
-const { priceValidator } = require("../validators");
+const { PriceValidator } = require("../validators");
 
 class PriceController {
 	// [GET] /prices
@@ -60,7 +60,7 @@ class PriceController {
 		try {
 			const payload = { ...req.body };
 
-			const { error } = priceValidator.createOrUpdate(payload);
+			const { error } = PriceValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 2,
@@ -89,7 +89,7 @@ class PriceController {
 			const id = req.params.id;
 			const payload = { ...req.body };
 
-			const { error } = priceValidator.createOrUpdate(payload);
+			const { error } = PriceValidator.createOrUpdate(payload);
 			if (error) {
 				res.json({
 					code: 4,
