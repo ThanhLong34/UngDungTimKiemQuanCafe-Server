@@ -3,7 +3,7 @@ const ImageSchema = require("../models/image.model");
 const { UploadValidator } = require("../validators");
 const multer = require("multer");
 const path = require("path");
-const { unlink } = require("node:fs/promises");
+const { unlink } = require("fs");
 
 const MIME_TYPE_MAP = {
 	"image/png": "png",
