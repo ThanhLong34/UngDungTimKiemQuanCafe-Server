@@ -8,9 +8,10 @@ const {
 
 const Schema = mongoose.Schema;
 
-const PriceSchema = new Schema({
-	title: { type: String, maxLength: 255, required: true },
-	description: { type: String, maxLength: 1000, default: "" },
+const FeedbackSchema = new Schema({
+	star: { type: Number, required: true },
+	comment: { type: String, maxLength: 1000, required: true },
+	postDate: { type: Date, required: true },
 	features: {
 		type: [
 			{
@@ -25,14 +26,14 @@ const PriceSchema = new Schema({
 }, { timestamps: true });
 
 // Custom queries
-PriceSchema.query.sortable = sortable;
-PriceSchema.query.searchable = searchable;
-PriceSchema.query.limitable = limitable;
+FeedbackSchema.query.sortable = sortable;
+FeedbackSchema.query.searchable = searchable;
+FeedbackSchema.query.limitable = limitable;
 
 // Add plugin
-PriceSchema.plugin(mongooseDelete, {
+FeedbackSchema.plugin(mongooseDelete, {
 	overrideMethods: "all",
 	deletedAt: true,
 });
 
-module.exports = mongoose.model("prices", PriceSchema);
+module.exports = mongoose.model("prices", FeedbackSchema);

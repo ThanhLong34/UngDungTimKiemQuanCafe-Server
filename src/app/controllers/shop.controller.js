@@ -126,20 +126,15 @@ class ShopController {
 		try {
 			const id = req.params.id;
 
-			const deleteResult = await ShopSchema.deleteOne({
+			const deleteResult = await ShopSchema.delete({
 				_id: id,
 			});
-			if (deleteResult.deletedCount > 0) {
-				res.json({
-					code: 1,
-					message: "Xóa thành công",
-				});
-			} else {
-				res.json({
-					code: 2,
-					message: "Không tìm thấy document cần xóa",
-				});
-			}
+			
+			res.json({
+				code: 1,
+				data: deleteResult,
+				message: "Xóa thành công",
+			});
 		} catch (error) {
 			next(error);
 		}

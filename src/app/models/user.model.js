@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongooseDelete = require("mongoose-delete");
 const bcrypt = require("bcrypt");
 const {
 	sortable,
@@ -11,14 +12,14 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
 	fullName: { type: String, maxLength: 255, required: true },
-	phoneNumber: { type: String, maxLength: 255, required: true, unique: true },
-	email: { type: String, maxLength: 255, required: true, unique: true },
+	phoneNumber: { type: String, maxLength: 255, required: true },
+	email: { type: String, maxLength: 255, required: true },
 	password: { type: String, maxLength: 255, required: true },
 	favourites: {
 		type: [String], default: [] },
 	isOwnerShop: { type: Boolean, default: false },
 	priceId: { type: String, default: null },
-});
+}, { timestamps: true });
 
 // Hash password pre save or create user
 // Dont use arrow function because it does not have context
@@ -40,5 +41,11 @@ UserSchema.query.limitable = limitable;
 
 // Custom methods
 UserSchema.methods.checkMatchPassword = checkMatchPassword;
+
+// Add plugin
+UserSchema.plugin(mongooseDelete, {
+	overrideMethods: "all",
+	deletedAt: true,
+});
 
 module.exports = mongoose.model("users", UserSchema);

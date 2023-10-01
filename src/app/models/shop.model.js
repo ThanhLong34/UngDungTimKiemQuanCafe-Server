@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongooseDelete = require("mongoose-delete");
 const {
 	sortable,
 	searchable,
@@ -63,11 +64,17 @@ const ShopSchema = new Schema({
 	},
 	favouriteQuantity: { type: Number, default: 0 },
 	userId: { type: String, default: "" },
-});
+}, { timestamps: true });
 
 // Custom queries
 ShopSchema.query.sortable = sortable;
 ShopSchema.query.searchable = searchable;
 ShopSchema.query.limitable = limitable;
+
+// Add plugin
+ShopSchema.plugin(mongooseDelete, {
+	overrideMethods: "all",
+	deletedAt: true,
+});
 
 module.exports = mongoose.model("shops", ShopSchema);
