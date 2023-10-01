@@ -1,7 +1,8 @@
 const UserSchema = require("../models/user.model");
 const { userValidator } = require("../validators");
+const ShopService = require("../services/shop.service");
 
-class userController {
+class UserController {
 	// [GET] /users
 	async getList(req, res, next) {
 		try {
@@ -146,11 +147,111 @@ class userController {
 		}
 	}
 
+	// [POST] /users/:id/addFavouriteById
+	async addFavouriteById(req, res, next) {
+		try {
+			const { id } = req.params;
+			const { shopId } = req.body;
+
+			const { error } = userValidator.addOrRemoveFavourite(shopId);
+			if (error) {
+				res.json({
+					code: 4,
+					message: error.message,
+				});
+				return;
+			}
+
+			const itemFound = await UserSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy tài khoản",
+				});
+				return;
+			}
+
+			if (itemFound.favourites.find((i) => i === shopId)) {
+				res.json({
+					code: 3,
+					message: "shopId đã có sẵn trong favourites",
+				});
+				return;
+			}
+
+			// Cập nhật favouriteQuantity của shop
+			const err = await ShopService.increaseFavouriteQuantity(shopId, 1);
+			if (err) throw err;
+
+			itemFound.favourites.push(shopId);
+			const saveResult = await itemFound.save();
+
+			res.json({
+				code: 1,
+				message: "Thêm vào favourites thành công",
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// [POST] /users/:id/removeFavouriteById
+	async removeFavouriteById(req, res, next) {
+		try {
+			const { id } = req.params;
+			const { shopId } = req.body;
+
+			const { error } = userValidator.addOrRemoveFavourite(shopId);
+			if (error) {
+				res.json({
+					code: 4,
+					message: error.message,
+				});
+				return;
+			}
+
+			const itemFound = await UserSchema.findOne({
+				_id: id,
+			});
+			if (!itemFound) {
+				res.json({
+					code: 5,
+					message: "Không tìm thấy tài khoản",
+				});
+				return;
+			}
+
+			if (!(itemFound.favourites.find((i) => i === shopId))) {
+				res.json({
+					code: 3,
+					message: "shopId không có trong favourites",
+				});
+				return;
+			}
+
+			// Cập nhật favouriteQuantity của shop
+			const err = await ShopService.decreaseFavouriteQuantity(shopId, 1);
+			if (err) throw err;
+
+			itemFound.favourites = itemFound.favourites.filter(i => i !== shopId);
+			const saveResult = await itemFound.save();
+
+			res.json({
+				code: 1,
+				message: "Xóa khỏi favourites thành công",
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
 	// [PUT] /users/:id/updatePasswordById
 	async updatePasswordById(req, res, next) {
 		try {
 			const { id } = req.params;
-			const { newPassword } = req.body
+			const { newPassword } = req.body;
 
 			const { error } = userValidator.updatePassword(newPassword);
 			if (error) {
@@ -184,13 +285,13 @@ class userController {
 		}
 	}
 
-	// [PUT] /users/:id/updateFavoritesById
-	async updateFavoritesById(req, res, next) {
+	// [PUT] /users/:id/updateFavouritesById
+	async updateFavouritesById(req, res, next) {
 		try {
 			const { id } = req.params;
-			const { favorites } = req.body
+			const { favourites } = req.body;
 
-			const { error } = userValidator.updateFavorites(favorites);
+			const { error } = userValidator.updateFavourites(favourites);
 			if (error) {
 				res.json({
 					code: 4,
@@ -210,12 +311,12 @@ class userController {
 				return;
 			}
 
-			itemFound.favourites = favorites;
+			itemFound.favourites = favourites;
 			const saveResult = await itemFound.save();
 
 			res.json({
 				code: 1,
-				message: "Cập nhật favorites tài khoản thành công",
+				message: "Cập nhật favourites tài khoản thành công",
 			});
 		} catch (error) {
 			next(error);
@@ -286,4 +387,4 @@ class userController {
 	}
 }
 
-module.exports = new userController();
+module.exports = new UserController();

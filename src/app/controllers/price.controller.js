@@ -1,7 +1,7 @@
 const PriceSchema = require("../models/price.model");
 const { priceValidator } = require("../validators");
 
-class priceController {
+class PriceController {
 	// [GET] /prices
 	async getList(req, res, next) {
 		try {
@@ -146,4 +146,4 @@ class priceController {
 	}
 }
 
-module.exports = new priceController();
+module.exports = new PriceController();

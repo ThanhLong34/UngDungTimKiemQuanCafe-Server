@@ -1,7 +1,7 @@
 const ShopSchema = require("../models/shop.model");
 const { shopValidator } = require("../validators");
 
-class shopController {
+class ShopController {
 	// [GET] /shops
 	async getList(req, res, next) {
 		try {
@@ -146,4 +146,4 @@ class shopController {
 	}
 }
 
-module.exports = new shopController();
+module.exports = new ShopController();
