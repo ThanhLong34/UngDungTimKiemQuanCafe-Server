@@ -3,7 +3,7 @@ const ImageSchema = require("../models/image.model");
 const { UploadValidator } = require("../validators");
 const multer = require("multer");
 const path = require("path");
-const { unlink } = require("fs");
+const fs = require("fs");
 
 const MIME_TYPE_MAP = {
 	"image/png": "png",
@@ -121,16 +121,19 @@ class UploadController {
 				__dirname,
 				`../../../${itemExisted.destination}/${itemExisted.filename}`
 			);
-			await unlink(imageFilePath);
+			
+			fs.unlink(imageFilePath, async (err) => {
+				if (err) throw err;
 
-			const deleteResult = await ImageSchema.deleteOne({
-				_id: id,
-			});
-
-			res.json({
-				code: 1,
-				data: deleteResult,
-				message: "Xóa thành công",
+				const deleteResult = await ImageSchema.deleteOne({
+					_id: id,
+				});
+	
+				res.json({
+					code: 1,
+					data: deleteResult,
+					message: "Xóa thành công",
+				});
 			});
 		} catch (error) {
 			next(error);
