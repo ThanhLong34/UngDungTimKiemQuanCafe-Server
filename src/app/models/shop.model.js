@@ -32,7 +32,7 @@ const ShopSchema = new Schema(
 		},
 		phoneNumber: { type: String, maxLength: 255, default: "" },
 		websiteURL: { type: String, maxLength: 1000, default: "" },
-		shopeeFoodURL: { type: String, maxLength: 1000, default: "" },
+		iframeSrc: { type: String, default: "" },
 		geolocation: {
 			type: [
 				{

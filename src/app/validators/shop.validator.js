@@ -73,9 +73,7 @@ module.exports = {
 			websiteURL: Joi.string().strict().max(1000).messages({
 				"string.max": "websiteURL không được quá 1000 ký tự",
 			}),
-			shopeeFoodURL: Joi.string().strict().max(1000).messages({
-				"string.max": "shopeeFoodURL không được quá 1000 ký tự",
-			}),
+			iframeSrc: Joi.string().strict(),
 			geolocation: Joi.array().items(
 				Joi.string().strict().max(255).messages({
 					"string.max": "geolocation item không được quá 255 ký tự",
