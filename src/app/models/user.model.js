@@ -6,20 +6,24 @@ const {
 	searchable,
 	limitable,
 } = require("../../utils/customQueries");
-const { checkMatchPassword } = require("../../utils/customMethods");
 
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
-	fullName: { type: String, maxLength: 255, required: true },
-	phoneNumber: { type: String, maxLength: 255, required: true },
-	email: { type: String, maxLength: 255, required: true },
-	password: { type: String, maxLength: 255, required: true },
-	favourites: {
-		type: [String], default: [] },
-	isOwnerShop: { type: Boolean, default: false },
-	priceId: { type: String, default: null },
-}, { timestamps: true });
+const UserSchema = new Schema(
+	{
+		fullName: { type: String, maxLength: 255, required: true },
+		phoneNumber: { type: String, maxLength: 255, required: true },
+		email: { type: String, maxLength: 255, required: true },
+		password: { type: String, maxLength: 255, required: true },
+		favourites: {
+			type: [String],
+			default: [],
+		},
+		isOwnerShop: { type: Boolean, default: false },
+		priceId: { type: String, default: null },
+	},
+	{ timestamps: true }
+);
 
 // Hash password pre save or create user
 // Dont use arrow function because it does not have context
@@ -40,7 +44,13 @@ UserSchema.query.searchable = searchable;
 UserSchema.query.limitable = limitable;
 
 // Custom methods
-UserSchema.methods.checkMatchPassword = checkMatchPassword;
+UserSchema.methods.checkMatchPassword = async function checkMatchPassword(
+	password
+) {
+	try {
+		return await bcrypt.compare(password, this.password);
+	} catch (error) {}
+};
 
 // Add plugin
 UserSchema.plugin(mongooseDelete, {

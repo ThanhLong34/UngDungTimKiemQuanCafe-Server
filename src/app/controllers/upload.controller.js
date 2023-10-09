@@ -31,6 +31,7 @@ const upload = multer({
 }).single("image");
 
 class UploadController {
+	// [GET] /uploads/getImages
 	async getImages(req, res, next) {
 		try {
 			const { ids } = req.body;
