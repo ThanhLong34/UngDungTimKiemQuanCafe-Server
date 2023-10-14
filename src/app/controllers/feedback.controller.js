@@ -5,7 +5,9 @@ class FeedbackController {
 	// [GET] /feedbacks
 	async getList(req, res, next) {
 		try {
-			const listResultFound = await FeedbackSchema.find({})
+			const listResultFound = await FeedbackSchema.find({
+				...req.query
+			})
 				.sortable(req)
 				.searchable(req)
 				.limitable(req);
