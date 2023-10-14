@@ -12,7 +12,7 @@ class FeedbackController {
 				.searchable(req)
 				.limitable(req);
 
-			const allDocuments = await FeedbackSchema.find({}).searchable(req);
+			const allDocuments = await FeedbackSchema.find({ ...req.query }).searchable(req);
 
 			if (listResultFound) {
 				res.json({
