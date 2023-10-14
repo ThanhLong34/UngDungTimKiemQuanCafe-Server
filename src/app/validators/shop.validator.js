@@ -79,7 +79,7 @@ module.exports = {
 					"string.max": "geolocation item không được quá 255 ký tự",
 				})
 			),
-			imageIds: Joi.array().items(Joi.string().strict()),
+			images: Joi.array().items(Joi.string().strict()),
 			menu: Joi.array().items({
 				name: Joi.string()
 					.trim()
