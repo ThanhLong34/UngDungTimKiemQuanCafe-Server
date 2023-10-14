@@ -100,7 +100,7 @@ class ShopController {
 				return;
 			}
 
-			itemFound.imageIds.push(imageObject._id.toString())
+			itemFound.images.push(imageObject._id.toString())
 			const saveResult = await itemFound.save();
 
 			res.json({
@@ -138,7 +138,7 @@ class ShopController {
 				return;
 			}
 
-			itemFound.imageIds = itemFound.imageIds.filter(i => i !== imageId)
+			itemFound.images = itemFound.images.filter(i => i !== imageId)
 			const saveResult = await itemFound.save();
 
 			// res.json({

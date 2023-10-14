@@ -43,7 +43,7 @@ const ShopSchema = new Schema(
 			],
 			default: [],
 		},
-		imageIds: {
+		images: {
 			type: [String],
 			default: [],
 		},
