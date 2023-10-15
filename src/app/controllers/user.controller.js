@@ -87,7 +87,7 @@ class UserController {
 
 			// create method in Schema not allowed handle prev middleware in mongoose
 			const newDocument = new UserSchema(payload);
-			newDocument.password = generatePassword(newDocument.password);
+			newDocument.password = await generatePassword(newDocument.password);
 			const saveUserResult = await newDocument.save();
 
 			res.json({
@@ -275,7 +275,7 @@ class UserController {
 				return;
 			}
 
-			itemFound.password = generatePassword(newPassword);
+			itemFound.password = await generatePassword(newPassword);
 			const saveResult = await itemFound.save();
 
 			res.json({
