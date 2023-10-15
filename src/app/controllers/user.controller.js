@@ -1,6 +1,7 @@
 const UserSchema = require("../models/user.model");
 const { UserValidator } = require("../validators");
 const ShopService = require("../services/shop.service");
+const { generatePassword } = require("../../utils/bcrypt");
 
 class UserController {
 	// [GET] /users
@@ -86,6 +87,7 @@ class UserController {
 
 			// create method in Schema not allowed handle prev middleware in mongoose
 			const newDocument = new UserSchema(payload);
+			newDocument.password = generatePassword(newDocument.password);
 			const saveUserResult = await newDocument.save();
 
 			res.json({
@@ -273,7 +275,7 @@ class UserController {
 				return;
 			}
 
-			itemFound.password = newPassword;
+			itemFound.password = generatePassword(newPassword);
 			const saveResult = await itemFound.save();
 
 			res.json({

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
-const bcrypt = require("bcrypt");
 const {
 	sortable,
 	searchable,
@@ -27,16 +26,16 @@ const UserSchema = new Schema(
 
 // Hash password pre save or create user
 // Dont use arrow function because it does not have context
-UserSchema.pre("save", async function (next) {
-	try {
-		const salt = await bcrypt.genSalt(10);
-		const hashPassword = await bcrypt.hash(this.password, salt);
-		this.password = hashPassword;
-		next();
-	} catch (error) {
-		next(error);
-	}
-});
+// UserSchema.pre("save", async function (next) {
+// 	try {
+// 		const salt = await bcrypt.genSalt(10);
+// 		const hashPassword = await bcrypt.hash(this.password, salt);
+// 		this.password = hashPassword;
+// 		next();
+// 	} catch (error) {
+// 		next(error);
+// 	}
+// });
 
 // Custom queries
 UserSchema.query.sortable = sortable;
