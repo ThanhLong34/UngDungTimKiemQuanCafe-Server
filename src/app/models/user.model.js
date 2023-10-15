@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
+const bcrypt = require("bcrypt");
 const {
 	sortable,
 	searchable,
@@ -43,9 +44,14 @@ UserSchema.query.searchable = searchable;
 UserSchema.query.limitable = limitable;
 
 // Custom methods
-UserSchema.methods.checkMatchPassword = async function checkMatchPassword(
-	password
-) {
+UserSchema.methods.hashPassword = async function () {
+	try {
+		const salt = await bcrypt.genSalt(10);
+		const hashPass = await bcrypt.hash(this.password, salt);
+		this.password = hashPass;
+	} catch (error) {}
+};
+UserSchema.methods.checkMatchPassword = async function (password) {
 	try {
 		return await bcrypt.compare(password, this.password);
 	} catch (error) {}
